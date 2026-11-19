@@ -1,0 +1,18 @@
+---
+interface Props {
+  items: string[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="flex flex-wrap justify-center gap-2.5">
+  {
+    items.map((skill) => (
+      <li class="inline-flex items-center gap-2 rounded-full border border-light/10 bg-surface/40 px-4 py-2 text-sm text-light/75 transition hover:border-accent/40 hover:text-accent">
+        <span class="size-1.5 rounded-full bg-accent" aria-hidden="true" />
+        {skill}
+      </li>
+    ))
+  }
+</ul>

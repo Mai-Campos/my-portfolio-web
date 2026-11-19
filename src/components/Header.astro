@@ -1,0 +1,75 @@
+---
+import { blobatar } from 'blobatar';
+import PillLink from './PillLink.astro';
+
+interface Props {
+  nombre: string;
+  cargo: string;
+  email: string;
+  cv: string;
+  github: string;
+  linkedin: string;
+  avatarSeed?: string;
+}
+
+const { nombre, cargo, email, cv, github, linkedin, avatarSeed } = Astro.props;
+
+const avatarSvg = blobatar(avatarSeed || nombre, {
+  background: 'circle',
+  title: `Avatar de ${nombre}`,
+  palette: {
+    bg: '#1f2937',
+    head: '#a3e635',
+    eye: '#111827',
+  },
+  traits: {
+    shape: 0.11,
+    'eye.ratio': 0.2,
+  },
+});
+---
+
+<header class="animate-rise pt-16 pb-14 sm:pt-24 sm:pb-16">
+  <div
+    class="flex flex-col items-center justify-center gap-8 sm:flex-row sm:gap-12"
+  >
+    <div class="order-2 text-center sm:order-1 sm:text-left">
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        {nombre}
+      </h1>
+      <p class="mt-2 text-base text-light/70 sm:text-lg">{cargo}</p>
+    </div>
+
+    <div
+      class="avatar order-1 size-24 shrink-0 overflow-hidden rounded-full bg-surface ring-2 ring-accent/40 shadow-[0_0_60px_-15px_rgba(163,230,53,0.55)] sm:order-2 sm:size-28"
+      aria-hidden="true"
+      set:html={avatarSvg}
+    />
+  </div>
+
+  <div class="mt-10 flex flex-wrap justify-center gap-3">
+    <PillLink href={`mailto:${email}`} icon="lucide:mail" label="Email" variant="accent" />
+    <PillLink href={cv} icon="lucide:download" label="Descargar CV" variant="accent" download />
+    <PillLink href={github} icon="simple-icons:github" label="GitHub" external />
+    <PillLink href={linkedin} icon="simple-icons:linkedin" label="LinkedIn" external />
+  </div>
+</header>
+
+<style>
+  .avatar :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .avatar:hover :global(svg) {
+    transform: scale(1.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .avatar:hover :global(svg) {
+      transform: none;
+    }
+  }
+</style>

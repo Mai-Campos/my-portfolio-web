@@ -1,0 +1,121 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Tech {
+  nombre: string;
+  icono: string;
+}
+
+interface Props {
+  tecnologias: Tech[];
+}
+
+const { tecnologias } = Astro.props;
+const groups = [0, 1];
+---
+
+<div class="marquee" role="region" aria-label="Tecnologías">
+  <div class="marquee-track">
+    {
+      groups.map((copy) => (
+        <ul class="marquee-group" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {tecnologias.map((tech) => (
+            <li class="tech-chip" title={tech.nombre}>
+              <Icon name={tech.icono} class="size-7" aria-hidden="true" />
+              <span class="sr-only">{tech.nombre}</span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .marquee-group {
+    display: flex;
+    gap: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .tech-chip {
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-light) 12%, transparent);
+    background-color: color-mix(in srgb, var(--color-surface) 55%, transparent);
+    color: color-mix(in srgb, var(--color-light) 70%, transparent);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .tech-chip:hover {
+    color: var(--color-accent);
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .marquee-track {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: none;
+    }
+
+    .marquee-group {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-right: 0;
+    }
+
+    .marquee-group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+</style>
