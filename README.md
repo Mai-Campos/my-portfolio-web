@@ -1,6 +1,6 @@
 # my-portfolio-web
 
-Mi portafolio personal de con Astro
+Mi portafolio web personal con Astro
 
 ## Comandos
 
