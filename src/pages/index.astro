@@ -1,99 +1,12 @@
 ---
-import { getEntry, render } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Section from '../components/Section.astro';
-import Divider from '../components/Divider.astro';
-import TechMarquee from '../components/TechMarquee.astro';
-import Experience from '../components/Experience.astro';
-import Projects from '../components/Projects.astro';
-import Education from '../components/Education.astro';
-import SoftSkills from '../components/SoftSkills.astro';
-import Footer from '../components/Footer.astro';
+import { getEntry } from 'astro:content';
+import PortfolioPage from '../components/PortfolioPage.astro';
 
-const entry = await getEntry('portfolio', 'perfil');
+const entry = await getEntry('portfolio', 'es');
 
 if (!entry) {
-  throw new Error(
-    'No se encontró el contenido del portfolio en src/content/portfolio/perfil.md',
-  );
+  throw new Error('No se encontró src/content/portfolio/es.md');
 }
-
-const { Content } = await render(entry);
-const p = entry.data;
-
-type SectionId =
-  | 'sobre-mi'
-  | 'tecnologias'
-  | 'experiencia'
-  | 'proyectos'
-  | 'educacion'
-  | 'habilidades';
-
-const sectionsById = new Map(p.secciones.map((section) => [section.id, section]));
-
-function section(id: SectionId) {
-  const data = sectionsById.get(id);
-
-  if (!data) {
-    throw new Error(`Falta la sección "${id}" en src/content/portfolio/perfil.md`);
-  }
-
-  return { id: data.id, title: data.titulo, subtitle: data.subtitulo };
-}
-
-const title = `${p.nombre} — ${p.cargo}`;
-const description = `${p.nombre}, ${p.cargo}. Portfolio personal con experiencia, proyectos y tecnologías.`;
 ---
 
-<BaseLayout title={title} description={description}>
-  <main class="mx-auto w-full max-w-3xl px-5 sm:px-8">
-    <Header
-      nombre={p.nombre}
-      cargo={p.cargo}
-      email={p.email}
-      cv={p.cv}
-      github={p.github}
-      linkedin={p.linkedin}
-      avatarSeed={p.avatarSeed}
-    />
-
-    <div class="space-y-16 pb-20 sm:space-y-20 sm:pb-24">
-      <Section {...section('sobre-mi')}>
-        <div class="prose-portfolio mx-auto max-w-2xl text-center">
-          <Content />
-        </div>
-      </Section>
-
-      <Divider />
-
-      <Section {...section('tecnologias')}>
-        <TechMarquee tecnologias={p.tecnologias} />
-      </Section>
-
-      <Section {...section('experiencia')}>
-        <Experience items={p.experiencia} />
-      </Section>
-
-      <Section {...section('proyectos')}>
-        <Projects items={p.proyectos} />
-      </Section>
-
-      <Section {...section('educacion')}>
-        <Education items={p.educacion} />
-      </Section>
-
-      <Section {...section('habilidades')}>
-        <SoftSkills items={p.habilidades} />
-      </Section>
-    </div>
-  </main>
-
-  <Footer
-    nombre={p.nombre}
-    email={p.email}
-    cv={p.cv}
-    github={p.github}
-    linkedin={p.linkedin}
-  />
-</BaseLayout>
+<PortfolioPage entry={entry} />

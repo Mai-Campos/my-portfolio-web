@@ -1,6 +1,8 @@
 ---
 import { blobatar } from 'blobatar';
 import PillLink from './PillLink.astro';
+import LanguageToggle from './LanguageToggle.astro';
+import type { Dictionary, Lang } from '../i18n/ui';
 
 interface Props {
   nombre: string;
@@ -10,48 +12,91 @@ interface Props {
   github: string;
   linkedin: string;
   avatarSeed?: string;
+  lang: Lang;
+  labels: Dictionary;
 }
 
-const { nombre, cargo, email, cv, github, linkedin, avatarSeed } = Astro.props;
+const {
+  nombre,
+  cargo,
+  email,
+  cv,
+  github,
+  linkedin,
+  avatarSeed,
+  lang,
+  labels,
+} = Astro.props;
 
+const eyeColor = '#111827';
+
+// La API de string de blobatar devuelve SVG estático y su capa `gaze` solo
+// está integrada en los adaptadores de framework, así que marcamos el grupo de
+// los ojos y el script de abajo los mueve con un seguimiento propio y ligero.
 const avatarSvg = blobatar(avatarSeed || nombre, {
   background: 'circle',
-  title: `Avatar de ${nombre}`,
   palette: {
     bg: '#1f2937',
     head: '#a3e635',
-    eye: '#111827',
+    eye: eyeColor,
   },
   traits: {
     shape: 0.11,
     'eye.ratio': 0.2,
   },
-});
+}).replace(`<g fill="${eyeColor}">`, `<g class="avatar-eyes" fill="${eyeColor}">`);
 ---
 
-<header class="animate-rise pt-16 pb-14 sm:pt-24 sm:pb-16">
-  <div
-    class="flex flex-col items-center justify-center gap-8 sm:flex-row sm:gap-12"
-  >
-    <div class="order-2 text-center sm:order-1 sm:text-left">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
-        {nombre}
-      </h1>
-      <p class="mt-2 text-base text-light/70 sm:text-lg">{cargo}</p>
-    </div>
+<header class="pt-6 pb-14 sm:pt-10 sm:pb-16">
+  <div class="flex justify-end">
+    <LanguageToggle lang={lang} label={labels.language} />
+  </div>
 
+  <div
+    class="mt-8 flex flex-row items-center justify-center gap-4 sm:mt-10 sm:gap-12"
+  >
     <div
-      class="avatar order-1 size-24 shrink-0 overflow-hidden rounded-full bg-surface ring-2 ring-accent/40 shadow-[0_0_60px_-15px_rgba(163,230,53,0.55)] sm:order-2 sm:size-28"
+      class="avatar size-20 shrink-0 overflow-hidden rounded-full bg-surface ring-2 ring-accent/40 shadow-[0_0_60px_-15px_rgba(163,230,53,0.55)] sm:size-28"
       aria-hidden="true"
+      data-avatar
       set:html={avatarSvg}
     />
+
+    <div class="min-w-0 text-left">
+      <h1 class="text-2xl font-bold tracking-tight sm:text-4xl">
+        {nombre}
+      </h1>
+      <p class="mt-1.5 text-base text-light/70 sm:text-lg">{cargo}</p>
+    </div>
   </div>
 
   <div class="mt-10 flex flex-wrap justify-center gap-3">
-    <PillLink href={`mailto:${email}`} icon="lucide:mail" label="Email" variant="accent" />
-    <PillLink href={cv} icon="lucide:download" label="Descargar CV" variant="accent" download />
-    <PillLink href={github} icon="simple-icons:github" label="GitHub" external />
-    <PillLink href={linkedin} icon="simple-icons:linkedin" label="LinkedIn" external />
+    <PillLink
+      href={`mailto:${email}`}
+      icon="lucide:mail"
+      label={labels.email}
+      variant="accent"
+      text={email}
+    />
+    <PillLink
+      href={cv}
+      icon="lucide:file-text"
+      label={labels.downloadCv}
+      variant="accent"
+      download
+    />
+    <PillLink
+      href={github}
+      icon="simple-icons:github"
+      label={labels.github}
+      external
+    />
+    <PillLink
+      href={linkedin}
+      icon="simple-icons:linkedin"
+      label={labels.linkedin}
+      external
+    />
   </div>
 </header>
 
@@ -67,9 +112,76 @@ const avatarSvg = blobatar(avatarSeed || nombre, {
     transform: scale(1.06);
   }
 
+  .avatar :global(.avatar-eyes) {
+    will-change: transform;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .avatar:hover :global(svg) {
       transform: none;
     }
   }
 </style>
+
+<script is:inline>
+  (() => {
+    const avatar = document.querySelector('[data-avatar]');
+    if (!avatar) return;
+
+    const svg = avatar.querySelector('svg');
+    const eyes = avatar.querySelector('.avatar-eyes');
+    if (!svg || !eyes) return;
+
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!finePointer.matches || reducedMotion.matches) return;
+
+    const maxTravel = 2.6;
+    let frame = 0;
+    let x = 0;
+    let y = 0;
+
+    eyes.style.transition = 'transform 180ms ease-out';
+
+    const render = () => {
+      frame = 0;
+      eyes.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    const follow = (event) => {
+      const rect = svg.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      const dx = event.clientX - (rect.left + rect.width / 2);
+      const dy = event.clientY - (rect.top + rect.height / 2);
+      const distance = Math.hypot(dx, dy);
+
+      if (distance === 0) {
+        x = 0;
+        y = 0;
+      } else {
+        const reach = Math.min(1, distance / (rect.width * 0.8));
+        x = (dx / distance) * maxTravel * reach;
+        y = (dy / distance) * maxTravel * reach;
+      }
+
+      schedule();
+    };
+
+    const reset = () => {
+      x = 0;
+      y = 0;
+      schedule();
+    };
+
+    window.addEventListener('pointermove', follow, { passive: true });
+    document.documentElement.addEventListener('pointerleave', reset, {
+      passive: true,
+    });
+    window.addEventListener('blur', reset);
+  })();
+</script>

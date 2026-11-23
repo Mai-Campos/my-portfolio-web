@@ -4,6 +4,7 @@ import { Icon } from 'astro-icon/components';
 interface Tech {
   nombre: string;
   icono: string;
+  color?: string;
 }
 
 interface Props {
@@ -20,7 +21,11 @@ const groups = [0, 1];
       groups.map((copy) => (
         <ul class="marquee-group" aria-hidden={copy === 1 ? 'true' : undefined}>
           {tecnologias.map((tech) => (
-            <li class="tech-chip" title={tech.nombre}>
+            <li
+              class="tech-chip"
+              title={tech.nombre}
+              style={`--tech: ${tech.color ?? '#f3f4f6'}`}
+            >
               <Icon name={tech.icono} class="size-7" aria-hidden="true" />
               <span class="sr-only">{tech.nombre}</span>
             </li>
@@ -74,19 +79,34 @@ const groups = [0, 1];
     height: 4rem;
     flex-shrink: 0;
     border-radius: 9999px;
-    border: 1px solid color-mix(in srgb, var(--color-light) 12%, transparent);
-    background-color: color-mix(in srgb, var(--color-surface) 55%, transparent);
-    color: color-mix(in srgb, var(--color-light) 70%, transparent);
+    border: 1px solid
+      color-mix(in srgb, var(--tech, var(--color-light)) 28%, transparent);
+    background-color: color-mix(
+      in srgb,
+      var(--tech, var(--color-light)) 9%,
+      transparent
+    );
+    color: var(--tech, var(--color-light));
     transition:
       color 0.2s ease,
       border-color 0.2s ease,
-      background-color 0.2s ease;
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .tech-chip:hover {
-    color: var(--color-accent);
-    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
-    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--tech, var(--color-accent)) 65%,
+      transparent
+    );
+    background-color: color-mix(
+      in srgb,
+      var(--tech, var(--color-accent)) 16%,
+      transparent
+    );
+    box-shadow: 0 0 22px -8px
+      color-mix(in srgb, var(--tech, var(--color-accent)) 70%, transparent);
   }
 
   @keyframes marquee {

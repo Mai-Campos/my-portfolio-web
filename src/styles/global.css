@@ -24,6 +24,7 @@
 
 @layer base {
   html {
+    font-size: 106.25%;
     scroll-behavior: smooth;
   }
 

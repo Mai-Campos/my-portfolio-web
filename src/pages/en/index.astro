@@ -1,0 +1,12 @@
+---
+import { getEntry } from 'astro:content';
+import PortfolioPage from '../../components/PortfolioPage.astro';
+
+const entry = await getEntry('portfolio', 'en');
+
+if (!entry) {
+  throw new Error('No se encontró src/content/portfolio/en.md');
+}
+---
+
+<PortfolioPage entry={entry} />

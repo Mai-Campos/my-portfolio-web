@@ -1,13 +1,16 @@
 ---
+import type { Dictionary } from '../i18n/ui';
+
 interface Props {
   nombre: string;
   email: string;
   cv: string;
   github: string;
   linkedin: string;
+  labels: Dictionary;
 }
 
-const { nombre, email, cv, github, linkedin } = Astro.props;
+const { nombre, email, cv, github, linkedin, labels } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
@@ -41,7 +44,7 @@ const year = new Date().getFullYear();
     </nav>
 
     <p>
-      © {year} {nombre}. Hecho con Astro y Tailwind CSS.
+      © {year} {nombre}. {labels.footerNote}
     </p>
   </div>
 </footer>

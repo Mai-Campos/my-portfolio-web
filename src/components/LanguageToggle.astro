@@ -1,0 +1,56 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  label: string;
+}
+
+const { lang, label } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const options = [
+  {
+    lang: 'es' as const,
+    label: 'ES',
+    name: 'Español',
+    flag: 'circle-flags:es',
+    href: base,
+  },
+  {
+    lang: 'en' as const,
+    label: 'EN',
+    name: 'English',
+    flag: 'circle-flags:gb',
+    href: `${base}en/`,
+  },
+];
+---
+
+<div
+  class="inline-flex items-center gap-1 rounded-full border border-light/15 bg-surface/40 p-1"
+  role="group"
+  aria-label={label}
+>
+  {
+    options.map((option) => (
+      <a
+        href={option.href}
+        hreflang={option.lang}
+        lang={option.lang}
+        title={option.name}
+        aria-current={lang === option.lang ? 'page' : undefined}
+        class:list={[
+          'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition',
+          lang === option.lang
+            ? 'bg-accent text-navy'
+            : 'text-light/60 hover:text-accent',
+        ]}
+      >
+        <Icon name={option.flag} class="size-4" aria-hidden="true" />
+        {option.label}
+      </a>
+    ))
+  }
+</div>
