@@ -107,6 +107,8 @@ proyectos:
   - nombre: Virtual Space Web
     descripcion: Multimedia catalog web platform with an admin panel. It showcases series, movies and video games to customers and lets administrators manage all the content.
     stack: [NestJS, TypeScript, React, PostgreSQL]
+    imagen: ../images/virtual-space-banner.png
+    imagenAlt: Virtual Space Web cover
     repo: https://github.com/Mai-Campos/Virtual-Space-Web-Project.git
 
 # ── Education ────────────────────────────────────────────────────────────────
