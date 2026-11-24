@@ -132,5 +132,3 @@ Con conocimientos de Docker, despliegue de aplicaciones, redes informáticas y
 fundamentos de seguridad informática
 
 Si tienes una idea podemos hacerla realidad [Hablemos de tu proyecto](mailto:camposmaikol1@gmail.com).
-
-Algo
